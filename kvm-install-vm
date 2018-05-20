@@ -26,6 +26,7 @@ COMMANDS
     detach-disk - detach a disk device from a guest domain
     list        - list all domains, running and stopped
     remove      - delete a guest domain
+    clone       - clone an existing VM
 
 EOF
 exit 0
@@ -139,6 +140,25 @@ function usage_subcommand ()
             printf "\n"
             printf "DESCRIPTION\n"
             printf "    Lists all running and stopped guest domains.\n"
+            ;;
+        clone)
+            printf "NAME\n"
+            printf "    $prog clone -disk [OPTIONS] [COMMANDS] VMNAME\n"
+            printf "\n"
+            printf "DESCRIPTION\n"
+            printf "    Clones an existing VM to a custom qcow image.\n"
+            printf "\n"
+            printf "COMMANDS\n"
+            printf "    help - show this help\n"
+            printf "\n"
+            printf "OPTIONS\n"
+            printf "    -o ORIGIN Name of existing VM\n"
+	    printf "    -n NAME for the new qcow file\n"
+            printf "\n"
+            printf "EXAMPLE\n"
+            printf "    $prog clone -o foo -n cloned-foo\n"
+            printf "        Clones the disk image of foo to a cloned-foo.qcow2\n"
+	    printf "NOT YET IMPLEMENTED:  will be `virt-clone -o <origin> -n <dest> --auto-clone`"
             ;;
         *)
             printf "'$subcommand' is not a valid subcommand.\n"
@@ -858,7 +878,7 @@ case "${subcommand}" in
         virsh list --all
         exit 0
         ;;
-    create|remove|attach-disk|remove-disk)
+    create|remove|attach-disk|remove-disk|clone)
         if [[ "${1:-none}" == "none" ]]; then
             usage_subcommand "${subcommand}"
         elif [[ "$1" =~ ^help$ ]]; then
